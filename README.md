@@ -1,4 +1,4 @@
-# Uniforms Product Editor
+# Product Editor
 
 A simple web app for managing uniforms product data in Supabase. Built with Node.js, Express, EJS, and Tailwind CSS (via CDN). No build step — just `node server.js`.
 

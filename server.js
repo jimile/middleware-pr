@@ -5,7 +5,7 @@
 
 require('dotenv').config();
 const express = require('express');
-const session = require('express-session');
+const cookieSession = require('cookie-session');
 const expressLayouts = require('express-ejs-layouts');
 const path = require('path');
 
@@ -25,11 +25,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // ── Sessions ─────────────────────────────────────────────────
-app.use(session({
-  secret: process.env.SESSION_SECRET || 'change-me',
-  resave: false,
-  saveUninitialized: false,
-  cookie: { maxAge: 1000 * 60 * 60 * 24 } // 24 hours
+app.use(cookieSession({
+  name: 'session',
+  keys: [process.env.SESSION_SECRET || 'change-me'],
+  maxAge: 1000 * 60 * 60 * 24 // 24 hours
 }));
 
 // ── Flash-style messages via session ─────────────────────────
@@ -56,7 +55,8 @@ app.post('/login', (req, res) => {
 });
 
 app.get('/logout', (req, res) => {
-  req.session.destroy(() => res.redirect('/login'));
+  req.session = null;
+  res.redirect('/login');
 });
 
 // ── Redirect root to products ────────────────────────────────
@@ -70,6 +70,10 @@ app.use('/products', requireAuth, require('./routes/images'));
 app.use('/products', requireAuth, require('./routes/pricing'));
 
 // ── Start ────────────────────────────────────────────────────
-app.listen(PORT, () => {
-  console.log(`Product editor running on http://localhost:${PORT}`);
-});
+if (process.env.VERCEL) {
+  module.exports = app;
+} else {
+  app.listen(PORT, () => {
+    console.log(`Product editor running on http://localhost:${PORT}`);
+  });
+}

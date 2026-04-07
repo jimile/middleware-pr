@@ -46,7 +46,7 @@ router.get('/', async (req, res) => {
     // Build query
     let query = supabase
       .from('products')
-      .select('id, name, sku, supplier_code, base_cost, is_active, image_url, garment_family, brands(name), categories(name)', { count: 'exact' })
+      .select('id, name, sku, supplier_code, base_cost, is_active, image_url, garment_family, brands!products_brand_id_fkey(name), categories!products_category_id_fkey(name)', { count: 'exact' })
       .eq('platform', 'uniforms')
       .order('name')
       .range(offset, offset + perPage - 1);
@@ -74,13 +74,21 @@ router.get('/', async (req, res) => {
       query = query.eq('is_active', false);
     }
 
-    const [{ data: products, count, error }, brands, categories] = await Promise.all([
+    // Execute query and load dropdowns in parallel
+    const [result, brands, categories] = await Promise.all([
       query,
       loadBrands(),
       loadCategories()
     ]);
 
-    if (error) throw error;
+    const { data: products, count, error } = result;
+
+    if (error) {
+      console.error('Supabase query error:', JSON.stringify(error, null, 2));
+      throw error;
+    }
+
+    console.log(`Loaded ${products ? products.length : 0} products (total: ${count})`);
 
     const totalPages = Math.ceil((count || 0) / perPage);
 
@@ -98,7 +106,7 @@ router.get('/', async (req, res) => {
       page,
       totalPages,
       totalCount: count || 0,
-      body: '' // layout compatibility
+
     });
   } catch (err) {
     console.error('Product list error:', err);
@@ -113,7 +121,7 @@ router.get('/', async (req, res) => {
       page: 1,
       totalPages: 0,
       totalCount: 0,
-      body: ''
+
     });
   }
 });
@@ -159,7 +167,7 @@ router.get('/new', async (req, res) => {
       categories,
       garmentFamilies: GARMENT_FAMILIES,
       errors: {},
-      body: ''
+
     });
   } catch (err) {
     console.error('New product form error:', err);
@@ -198,7 +206,7 @@ router.post('/', async (req, res) => {
         categories,
         garmentFamilies: GARMENT_FAMILIES,
         errors,
-        body: ''
+  
       });
     }
 
@@ -270,7 +278,7 @@ router.get('/:id/edit', async (req, res) => {
       categories,
       garmentFamilies: GARMENT_FAMILIES,
       errors: {},
-      body: ''
+
     });
   } catch (err) {
     console.error('Edit form error:', err);
@@ -309,7 +317,7 @@ router.post('/:id', async (req, res) => {
         categories,
         garmentFamilies: GARMENT_FAMILIES,
         errors,
-        body: ''
+  
       });
     }
 

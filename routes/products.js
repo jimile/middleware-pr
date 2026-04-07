@@ -16,22 +16,21 @@ const GARMENT_FAMILIES = [
 
 // ── Helpers ──────────────────────────────────────────────────
 
-// Load brands for uniforms platform
+// Load all brands used by uniforms products (some brands have platform='print-room'
+// but are still referenced by uniforms products via brand_id)
 async function loadBrands() {
   const { data } = await supabase
     .from('brands')
     .select('id, name')
-    .eq('platform', 'uniforms')
     .order('name');
   return data || [];
 }
 
-// Load categories for uniforms platform
+// Load all categories used by uniforms products
 async function loadCategories() {
   const { data } = await supabase
     .from('categories')
     .select('id, name')
-    .eq('platform', 'uniforms')
     .order('name');
   return data || [];
 }

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= typeof title !== 'undefined' ? title + ' — ' : '' %>Uniforms Editor</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+  <!-- Nav bar -->
+  <nav class="bg-white shadow">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/products" class="text-lg font-bold text-indigo-600">Uniforms Editor</a>
+      <div class="flex items-center gap-4">
+        <a href="/products" class="text-sm text-gray-600 hover:text-gray-900">Products</a>
+        <a href="/products/new" class="text-sm text-gray-600 hover:text-gray-900">+ New Product</a>
+        <a href="/logout" class="text-sm text-red-500 hover:text-red-700">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Flash messages -->
+  <% if (typeof flash !== 'undefined' && flash) { %>
+    <div class="max-w-7xl mx-auto px-4 mt-4">
+      <div class="<%= flash.type === 'error' ? 'bg-red-50 border-red-400 text-red-700' : 'bg-green-50 border-green-400 text-green-700' %> border rounded px-4 py-3 text-sm">
+        <%= flash.message %>
+      </div>
+    </div>
+  <% } %>
+
+  <!-- Page content -->
+  <main class="max-w-7xl mx-auto px-4 py-6">
+    <%- body %>
+  </main>
+
+</body>
+</html>

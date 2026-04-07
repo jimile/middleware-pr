@@ -1,0 +1,82 @@
+<div class="mb-6">
+  <div class="flex items-center gap-2 text-sm text-gray-500 mb-2">
+    <a href="/products" class="hover:text-gray-700">Products</a>
+    <span>/</span>
+    <a href="/products/<%= product.id %>/edit" class="hover:text-gray-700"><%= product.name %></a>
+    <span>/</span>
+    <span class="text-gray-800">Sizes</span>
+  </div>
+  <h1 class="text-2xl font-bold text-gray-800">Manage Sizes</h1>
+</div>
+
+<!-- Quick-add standard sizes -->
+<div class="bg-white rounded-lg shadow p-6 mb-6">
+  <div class="flex items-center justify-between mb-3">
+    <h2 class="text-lg font-semibold text-gray-700">Quick Add</h2>
+    <form method="POST" action="/products/<%= product.id %>/sizes/quick-add">
+      <button type="submit" class="bg-indigo-600 text-white text-sm rounded px-4 py-1.5 hover:bg-indigo-700">
+        Add All Standard Sizes (XS-5XL)
+      </button>
+    </form>
+  </div>
+  <div class="flex flex-wrap gap-2">
+    <% standardSizes.forEach(size => { %>
+      <form method="POST" action="/products/<%= product.id %>/sizes" class="inline">
+        <input type="hidden" name="label" value="<%= size %>">
+        <button type="submit"
+          class="px-3 py-1 text-sm border rounded hover:bg-gray-50
+            <%= sizes.some(s => s.label === size) ? 'bg-gray-100 text-gray-400 cursor-default' : 'bg-white text-gray-700' %>">
+          <%= size %>
+        </button>
+      </form>
+    <% }) %>
+  </div>
+</div>
+
+<!-- Add custom size -->
+<div class="bg-white rounded-lg shadow p-6 mb-6">
+  <h2 class="text-lg font-semibold text-gray-700 mb-3">Add Custom Size</h2>
+  <form method="POST" action="/products/<%= product.id %>/sizes" class="flex gap-3 items-end">
+    <div class="flex-1">
+      <label class="block text-xs font-medium text-gray-500 mb-1">Label</label>
+      <input type="text" name="label" required placeholder="e.g. 3XL-Tall"
+        class="w-full border border-gray-300 rounded px-3 py-2 text-sm">
+    </div>
+    <div class="w-24">
+      <label class="block text-xs font-medium text-gray-500 mb-1">Order</label>
+      <input type="number" name="order_index" placeholder="Auto"
+        class="w-full border border-gray-300 rounded px-3 py-2 text-sm">
+    </div>
+    <button type="submit" class="bg-indigo-600 text-white text-sm rounded px-4 py-2 hover:bg-indigo-700">Add</button>
+  </form>
+</div>
+
+<!-- Existing sizes -->
+<div class="bg-white rounded-lg shadow">
+  <table class="w-full text-sm">
+    <thead class="bg-gray-50 border-b">
+      <tr>
+        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Order</th>
+        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Label</th>
+        <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      <% if (sizes.length === 0) { %>
+        <tr><td colspan="3" class="px-4 py-8 text-center text-gray-400">No sizes yet.</td></tr>
+      <% } %>
+      <% sizes.forEach(s => { %>
+        <tr class="hover:bg-gray-50">
+          <td class="px-4 py-2 text-gray-500"><%= s.order_index %></td>
+          <td class="px-4 py-2 font-medium text-gray-800"><%= s.label %></td>
+          <td class="px-4 py-2 text-right">
+            <form method="POST" action="/products/<%= product.id %>/sizes/<%= s.id %>/delete" class="inline">
+              <button type="submit" onclick="return confirm('Delete this size?')"
+                class="text-xs text-red-500 hover:text-red-700">Delete</button>
+            </form>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>

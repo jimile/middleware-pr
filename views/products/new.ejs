@@ -1,0 +1,156 @@
+<div class="mb-6">
+  <h1 class="text-2xl font-bold text-gray-800">New Product</h1>
+  <p class="text-sm text-gray-500 mt-1">Will be created as inactive. You can activate it after adding details.</p>
+</div>
+
+<form method="POST" action="/products" class="space-y-6">
+
+  <!-- Basic Info -->
+  <div class="bg-white rounded-lg shadow p-6">
+    <h2 class="text-lg font-semibold text-gray-700 mb-4">Basic Info</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+        <input type="text" name="name" value="<%= product.name || '' %>" required
+          class="w-full border rounded px-3 py-2 text-sm <%= errors.name ? 'border-red-500' : 'border-gray-300' %>">
+        <% if (errors.name) { %><p class="text-red-500 text-xs mt-1"><%= errors.name %></p><% } %>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">SKU</label>
+        <input type="text" name="sku" value="<%= product.sku || '' %>"
+          class="w-full border border-gray-300 rounded px-3 py-2 text-sm">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Supplier Code</label>
+        <input type="text" name="supplier_code" value="<%= product.supplier_code || '' %>"
+          class="w-full border border-gray-300 rounded px-3 py-2 text-sm">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
+        <input type="url" name="image_url" value="<%= product.image_url || '' %>"
+          class="w-full border border-gray-300 rounded px-3 py-2 text-sm">
+      </div>
+      <div class="md:col-span-2">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+        <textarea name="description" rows="3"
+          class="w-full border border-gray-300 rounded px-3 py-2 text-sm"><%= product.description || '' %></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- Classification -->
+  <div class="bg-white rounded-lg shadow p-6">
+    <h2 class="text-lg font-semibold text-gray-700 mb-4">Classification</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Brand *</label>
+        <select name="brand_id" required
+          class="w-full border rounded px-3 py-2 text-sm <%= errors.brand_id ? 'border-red-500' : 'border-gray-300' %>">
+          <option value="">Select brand...</option>
+          <% brands.forEach(b => { %>
+            <option value="<%= b.id %>" <%= product.brand_id === b.id ? 'selected' : '' %>><%= b.name %></option>
+          <% }) %>
+        </select>
+        <% if (errors.brand_id) { %><p class="text-red-500 text-xs mt-1"><%= errors.brand_id %></p><% } %>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Category *</label>
+        <select name="category_id" required
+          class="w-full border rounded px-3 py-2 text-sm <%= errors.category_id ? 'border-red-500' : 'border-gray-300' %>">
+          <option value="">Select category...</option>
+          <% categories.forEach(c => { %>
+            <option value="<%= c.id %>" <%= product.category_id === c.id ? 'selected' : '' %>><%= c.name %></option>
+          <% }) %>
+        </select>
+        <% if (errors.category_id) { %><p class="text-red-500 text-xs mt-1"><%= errors.category_id %></p><% } %>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Garment Family</label>
+        <select name="garment_family" class="w-full border border-gray-300 rounded px-3 py-2 text-sm">
+          <option value="">None</option>
+          <% garmentFamilies.forEach(gf => { %>
+            <option value="<%= gf %>" <%= product.garment_family === gf ? 'selected' : '' %>><%= gf.charAt(0).toUpperCase() + gf.slice(1) %></option>
+          <% }) %>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Industry</label>
+        <input type="text" name="industry" placeholder="e.g. healthcare, corporate"
+          value="<%= product.industry || '' %>"
+          class="w-full border border-gray-300 rounded px-3 py-2 text-sm">
+        <p class="text-gray-400 text-xs mt-1">Comma-separated</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pricing -->
+  <div class="bg-white rounded-lg shadow p-6">
+    <h2 class="text-lg font-semibold text-gray-700 mb-4">Pricing</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Base Cost ($)</label>
+        <input type="number" name="base_cost" step="0.01" value="<%= product.base_cost || '' %>"
+          class="w-full border border-gray-300 rounded px-3 py-2 text-sm">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Markup %</label>
+        <input type="number" name="markup_pct" step="0.01" value="<%= product.markup_pct || 0 %>"
+          class="w-full border border-gray-300 rounded px-3 py-2 text-sm">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Decoration Price ($)</label>
+        <input type="number" name="decoration_price" step="0.01" value="<%= product.decoration_price || 0 %>"
+          class="w-full border border-gray-300 rounded px-3 py-2 text-sm">
+      </div>
+      <div class="flex items-end">
+        <label class="flex items-center gap-2 text-sm text-gray-700">
+          <input type="checkbox" name="decoration_eligible" checked class="rounded border-gray-300">
+          Decoration Eligible
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Advanced -->
+  <div class="bg-white rounded-lg shadow p-6">
+    <h2 class="text-lg font-semibold text-gray-700 mb-4">Advanced</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Safety Standard</label>
+        <input type="text" name="safety_standard" value="<%= product.safety_standard || '' %>"
+          class="w-full border border-gray-300 rounded px-3 py-2 text-sm">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">MOQ</label>
+        <input type="number" name="moq" value="<%= product.moq || 24 %>"
+          class="w-full border border-gray-300 rounded px-3 py-2 text-sm">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Lead Time (days)</label>
+        <input type="number" name="lead_time_days" value="<%= product.lead_time_days || 14 %>"
+          class="w-full border border-gray-300 rounded px-3 py-2 text-sm">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Sizing Type</label>
+        <select name="sizing_type" class="w-full border border-gray-300 rounded px-3 py-2 text-sm">
+          <option value="multi_size">Multi Size</option>
+          <option value="one_size">One Size</option>
+        </select>
+      </div>
+    </div>
+    <div class="mt-4">
+      <label class="block text-sm font-medium text-gray-700 mb-1">Specs (JSON)</label>
+      <textarea name="specs" rows="4" placeholder='{"sizes": ["S","M","L"], "fabric_hint": "100% cotton"}'
+        class="w-full border rounded px-3 py-2 text-sm font-mono <%= errors.specs ? 'border-red-500' : 'border-gray-300' %>"><%= product.specs || '' %></textarea>
+      <% if (errors.specs) { %><p class="text-red-500 text-xs mt-1"><%= errors.specs %></p><% } %>
+      <p class="text-gray-400 text-xs mt-1">Must be valid JSON. Leave empty if not needed.</p>
+    </div>
+  </div>
+
+  <!-- Submit -->
+  <div class="flex items-center gap-4">
+    <button type="submit" class="bg-indigo-600 text-white font-medium rounded px-6 py-2 hover:bg-indigo-700">Create Product</button>
+    <a href="/products" class="text-sm text-gray-500 hover:text-gray-700">Cancel</a>
+  </div>
+
+</form>
